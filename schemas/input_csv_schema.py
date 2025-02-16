@@ -15,6 +15,6 @@ input_csv_schema = Schema(
         "Collection Media Condition": String(),
         "Collection Sleeve Condition": String(),
         "Collection Owner": String(),
-        "Collection Genre": String()
+        "Collection Genre": String(),
     }
 )
