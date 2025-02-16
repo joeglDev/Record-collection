@@ -1,40 +1,41 @@
-from polars import Schema, String, Int32, read_csv, col
+from polars import read_csv, DataFrame
+from schemas.input_csv_schema import input_csv_schema
 
-csv_schema = Schema(
-    {
-        "Catalog#": String(),
-        "Artist": String(),
-        "Title": String(),
-        "Label": String(),
-        "Format": String(),
-        "Rating": String(),
-        "Released": Int32(),
-        "release_id": Int32(),
-        "CollectionFolder": String(),
-        "Date Added": String(),
-        "Collection Media Condition": String(),
-        "Collection Sleeve Condition": String(),
-        "Collection Notes": String(),
-        "Collection Year Published": Int32(),
-    }
-)
+class GenerateRecordsStatistics:
+    def __init__(self, input_path: str):
+        self.input_path = input_path
+        self.input_df: DataFrame | None = None
 
-# Read the CSV file
-df = read_csv("data/discogs.csv", schema=csv_schema)
-df = df.with_columns(col("Collection Year Published"))
-df = df.sort(by="Collection Year Published", descending=True)
+    def import_data(self):# Read the CSV file
+        input_df = read_csv("data/discogs.csv", schema=input_csv_schema)
+        self.input_df = input_df
+        # df = df.sort(by="Released", descending=True)
 
-# Display the entire DataFrame
-# print(df.schema)
-print(df)
+        print("Input data:")
+        input_df.glimpse()
 
-# year published statistics
-years_published = df.get_column("Collection Year Published")
-mean = years_published.mean()
-median = years_published.median()
-mode = years_published.mode()[0]
+    def split_df_by_column(self):
+        pass
 
-print(f"The mean publication year is {mean}.")
-print(f"The median publication year is {median}.")
-print(f"The mode publication year is {mode}.")
+    def run(self):
+        self.import_data()
+
+        # year published statistics
+        years_published = self.input_df.get_column("Released")
+        mean = years_published.mean()
+        median = years_published.median()
+        mode = years_published.mode()[0]
+
+        print(f"The mean publication year is {mean}.")
+        print(f"The median publication year is {median}.")
+        print(f"The mode publication year is {mode}.")
+
+        self.split_df_by_column()
+
+
+
+service = GenerateRecordsStatistics(input_path="data/discogs.csv")
+service.run()
+
+
 
