@@ -6,9 +6,10 @@ from utils.create_columns import create_columns
 
 
 class GenerateRecordsStatistics:
-    def __init__(self, input_path: str, output_path: str):
+    def __init__(self, input_path: str, output_path: str, column_split_by: str):
         self.input_path = input_path
         self.output_path = output_path
+        self.column_split_by = column_split_by
         self.input_df: DataFrame | None = None
 
     def _import_data(self):
@@ -34,8 +35,9 @@ class GenerateRecordsStatistics:
     def _save_summary_statistics(self, dfs: List[DataFrame], column: str):
         print(f"Generating summary statistics for dataframes split by {column}")
         for df in dfs:
+            csv_name = df.item(row=0, column=column)
+
             # year published statistics
-            genre = df.item(row=0, column=column)
             years_published = df.get_column("Released")
             mean = years_published.mean()
             median = years_published.median()
@@ -48,22 +50,22 @@ class GenerateRecordsStatistics:
             }
 
             output_text = f"""
-            For Records in the {genre} genre.
+            For records split by '{column}' and in the category '{csv_name}'.
             The mean release year is {mean}.
             The median release year is {median}.
             The mode release year is {mode}."
             """
             print(output_text)
 
-            self._write_to_csv(name=genre, statistics=statistics, df=df)
+            self._write_to_csv(name=csv_name, statistics=statistics, df=df)
 
     def run(self):
         self._import_data()
-        split_dfs = self._split_df_by_column(column="Collection Genre")
-        self._save_summary_statistics(dfs=split_dfs, column="Collection Genre")
+        split_dfs = self._split_df_by_column(column=self.column_split_by)
+        self._save_summary_statistics(dfs=split_dfs, column=self.column_split_by)
 
 
 service = GenerateRecordsStatistics(
-    input_path="data/discogs.csv", output_path="output_data"
+    input_path="data/discogs.csv", output_path="output_data", column_split_by="Collection Genre"
 )
 service.run()
