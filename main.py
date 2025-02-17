@@ -66,6 +66,8 @@ class GenerateRecordsStatistics:
 
 
 service = GenerateRecordsStatistics(
-    input_path="data/discogs.csv", output_path="output_data", column_split_by="Collection Genre"
+    input_path="data/discogs.csv",
+    output_path="output_data",
+    column_split_by="Collection Genre",
 )
 service.run()
