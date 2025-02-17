@@ -1,4 +1,7 @@
 data/discogs.csv
-output_data
+output_data/*.csv
+
 .env
 .idea/
+
+*/__pycache__/
